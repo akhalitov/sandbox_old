@@ -1,0 +1,12 @@
+set -x
+
+TEMPLATE_NAME="$2"
+DESTINATION_SERVER="$1"
+
+VMS=($(prlctl list -ao name|grep $TEMPLATE_NAME))
+
+for VM in "${VMS[@]}"
+do
+        prlctl migrate $VM root@$DESTINATION_SERVER --keep-src
+done
+set +x

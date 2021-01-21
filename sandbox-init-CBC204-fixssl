@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -x;
+if [ $# -eq 0 ]; then
+    echo "No arguments"
+    exit 0
+fi
+
+SandboxID=`printf "%02d" $1`
+
+if [ -e "/root/sandbox/status/$SandboxID" ];then
+
+	sleep 20
+
+        prlctl exec jumper-${SandboxID} "echo 'SSLProtocol             all -SSLv3 -TLSv1 -TLSv1.1' >> /etc/httpd/conf.d/brand_'$BRAND_URL'.conf"
+        prlctl exec jumper-${SandboxID} "echo 'SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384' >> /etc/httpd/conf.d/brand_'$BRAND_URL'.conf"
+        prlctl exec jumper-${SandboxID} "echo 'SSLHonorCipherOrder     off' >> /etc/httpd/conf.d/brand_'$BRAND_URL'.conf"
+        prlctl exec jumper-${SandboxID} "systemctl restart httpd"
+
+else
+        echo "cannot find sandbox status file /root/sandbox/status/$SandboxID"
+        fi
+
+set +x;

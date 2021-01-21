@@ -1,0 +1,70 @@
+#!/bin/bash
+
+set -x;
+
+if [ $# -eq 0 ]; then
+	echo "No arguments"
+    exit 0
+fi
+
+SandboxID=`printf "%02d" $1`
+
+CONFIG=$2
+
+if [ -e "/root/sandbox/status/$SandboxID" ];then
+	echo "sandbox status file /root/sandbox/status/$SandboxID exists"
+    exit 0
+else
+	echo "status = clonning" >> /root/sandbox/status/$SandboxID
+
+	TemplateName=`awk '/^template/{print $NF}' $CONFIG`
+	echo "template = $TemplateName" >> /root/sandbox/status/$SandboxID
+
+	#need to check if template is stopped.
+
+	Domain=`awk '/^domain/{print $NF}' $CONFIG`
+	echo "domain = $Domain" >> /root/sandbox/status/$SandboxID
+	
+	UserPassword=`date|md5sum |awk '{print substr($0,0,10)}'`
+	echo "password = $UserPassword" >> /root/sandbox/status/$SandboxID
+
+
+	prlctl clone Template_${TemplateName}_jumper --name jumper-${SandboxID}
+	
+	Sandbox_IP=`awk '/^sandbox-'$SandboxID'-VLAN/{print $NF}' /root/sandbox/config/ip.cfg`
+	echo "ip = $Sandbox_IP" >> /root/sandbox/status/$SandboxID
+	prlctl set jumper-${SandboxID} --device-set net0 --ipadd ${Sandbox_IP}/24
+	prlctl set jumper-${SandboxID} --device-set net1 --network sandbox-${SandboxID}-VLAN --ipadd 10.111.22.1
+#	prlctl set jumper-${SandboxID} --device-set net2 --network sandbox-${SandboxID}-VLAN --ipadd 10.111.11.1
+#	prlctl set jumper-${SandboxID} --ipfilter no --macfilter no --preventpromisc no
+	
+	IPLayout=`awk '/^ip-layout/{print $NF}' $CONFIG`
+	IFS=';' read -ra VE_LIST_WITH_IP <<< "$IPLayout"
+
+	for i in "${VE_LIST_WITH_IP[@]}"; do
+		IFS=':' read -ra VE <<< "$i"
+		prlctl clone Template_${TemplateName}_ve${VE[0]} --name ve-${SandboxID}-${VE[0]}
+		prlctl set ve-${SandboxID}-${VE[0]} --device-set net0 --network sandbox-${SandboxID}-VLAN --ipadd 10.111.22.${VE[1]}
+#		prlctl set ve-${SandboxID}-${VE[0]} --device-set net1 --network sandbox-${SandboxID}-VLAN --ipadd 10.111.11.${VE[1]}
+			
+		VE_LIST+=${VE[0]}
+		VE_LIST+=";"
+	done
+	
+	echo "ve_list = $VE_LIST" >> /root/sandbox/status/$SandboxID
+	sed -i 's/^\(status\s*=\s*\).*$/\1clonned/' /root/sandbox/status/$SandboxID
+	
+	sandbox-start $1
+
+	InitScript=`awk '/^init-script/{print $NF}' $CONFIG`
+	
+	if [ -z "$InitScript" ]	
+		then
+			sandbox-init $1
+		else
+			$InitScript $1
+	fi
+	sandbox-init-CBC204-fixssl $1
+fi
+
+set +x;

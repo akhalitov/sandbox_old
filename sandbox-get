@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -x;
+if [ $# -eq 0 ]; then
+	echo "No arguments"
+    exit 0
+fi
+
+SandboxID=`printf "%02d" $1`
+
+if [ -e "/root/sandbox/status/$SandboxID" ];then
+	echo `awk '/^status/{print $NF}' /root/sandbox/status/$SandboxID`        
+else
+	echo "0"
+	exit 0
+fi

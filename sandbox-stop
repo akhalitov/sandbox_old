@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -x;
+if [ $# -eq 0 ]
+  then
+    echo "No arguments"
+	exit 0
+fi
+
+SandboxID=`printf "%02d" $1`
+              
+
+if [ -e "/root/sandbox/status/$SandboxID" ];then
+	prlctl stop jumper-${SandboxID}
+	
+	VE_LIST=`awk '/^ve_list/{print $NF}' /root/sandbox/status/${SandboxID}`
+	for VE_ID in `echo $VE_LIST | sed 's/;/ /g'`; do
+		prlctl stop ve-${SandboxID}-${VE_ID}
+	done
+else
+	echo "cannot find sandbox status file /root/sandbox/status/$SandboxID"
+	fi
+
+set +x;

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+HostName=`hostname`
+HWHOST='-2'${HostName: -1}
+
+for f in /root/sandbox/status/*; do
+
+	if [ -e "$f" ]; then
+		line=""
+		line+="cp"
+		line+=$HWHOST
+		line+="-"
+		line+=`echo -n $f | tail -c 2`
+		line+="."`awk '/^domain/{print $NF}' $f`
+		line+=" "
+		line+=`awk '/^ip/{print $NF}' $f`
+		line+=" "
+		line+=`awk '/^password/{print $NF}' $f`
+		line+=" "
+		line+=`awk '/^status/{print $NF}' $f`
+	else
+		line="no sandboxes"
+	fi
+    
+	echo $line
+done
