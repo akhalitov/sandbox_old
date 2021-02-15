@@ -1,6 +1,0 @@
-status = ok
-template = CBC204v8
-domain = learn-cloudblue.com
-password = 6d4ebcb8f9
-ip = 209.41.159.22
-ve_list = 24;16;19;14;23;11;12;13;
