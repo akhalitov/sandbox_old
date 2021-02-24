@@ -30,6 +30,7 @@ function pau_restart() {
 
 SandboxID=`printf "%02d" $1`
 
+
 HostName=`hostname`
 HWHOST='-2'${HostName: -1}
 SubscriptionID=`date +"%y"``date +"%m"``date +"%d"`${HostName: -1}$101
