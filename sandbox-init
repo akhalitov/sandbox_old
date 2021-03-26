@@ -34,7 +34,6 @@ HWHOST='-22'
 DNS='cp'$HWHOST'-'$SandboxID
 RESELLERDNS='reseller'$HWHOST'-'$SandboxID
 BRAND_URL='cp'$HWHOST'-'$SandboxID'.learn-cloudblue.com'
-ADMINPASS='StrongPWD!@#'
 BRANDID='8'
 PROXY_URL='https://'$BRAND_URL':6308'
 
