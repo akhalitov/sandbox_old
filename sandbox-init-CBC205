@@ -100,32 +100,6 @@ if [ -e "/root/sandbox/status/$SandboxID" ];then
         prlctl exec ve-${SandboxID}-23 "ntpdate -s 0.de.pool.ntp.org"
         prlctl exec ve-${SandboxID}-23 "systemctl start ntpdate"
 
-        prlctl exec ve-${SandboxID}-33 echo ok
-        prlctl exec ve-${SandboxID}-33 "systemctl stop ntpdate"
-        prlctl exec ve-${SandboxID}-33 "ntpdate -s 0.de.pool.ntp.org"
-        prlctl exec ve-${SandboxID}-33 "systemctl start ntpdate"
-        prlctl set ve-${SandboxID}-33 --ipfilter no --macfilter no --preventpromisc no
-        prlctl exec ve-${SandboxID}-33 'brctl addif br0 eth0'
-        prlctl exec ve-${SandboxID}-33 'ip r d 10.111.22.0/24 dev eth0'
-        prlctl exec ve-${SandboxID}-33 'ip r d 10.111.22.1 dev eth0'
-		
-	prlctl exec ve-${SandboxID}-34 echo ok
-        prlctl exec ve-${SandboxID}-34 "systemctl stop ntpdate"
-        prlctl exec ve-${SandboxID}-34 "ntpdate -s 0.de.pool.ntp.org"
-        prlctl exec ve-${SandboxID}-34 "systemctl start ntpdate"
-        prlctl set ve-${SandboxID}-34 --ipfilter no --macfilter no --preventpromisc no
-        prlctl exec ve-${SandboxID}-34 'brctl addif br0 eth0'
-        prlctl exec ve-${SandboxID}-34 'ip r d 10.111.22.0/24 dev eth0'
-        prlctl exec ve-${SandboxID}-34 'ip r d 10.111.22.1 dev eth0'
-		
-	prlctl exec ve-${SandboxID}-35 echo ok
-        prlctl exec ve-${SandboxID}-35 "systemctl stop ntpdate"
-        prlctl exec ve-${SandboxID}-35 "ntpdate -s 0.de.pool.ntp.org"
-        prlctl exec ve-${SandboxID}-35 "systemctl start ntpdate"
-        prlctl set ve-${SandboxID}-35 --ipfilter no --macfilter no --preventpromisc no
-        prlctl exec ve-${SandboxID}-35 'brctl addif br0 eth0'
-        prlctl exec ve-${SandboxID}-35 'ip r d 10.111.22.0/24 dev eth0'
-        prlctl exec ve-${SandboxID}-35 'ip r d 10.111.22.1 dev eth0'
 
         prlctl exec ve-${SandboxID}-19 "cscript" "c:\Windows\system32\slmgr.vbs" "-rearm"
         prlctl restart ve-${SandboxID}-19
@@ -152,7 +126,7 @@ if [ -e "/root/sandbox/status/$SandboxID" ];then
 
         prlctl exec ve-${SandboxID}-14 "curl -d '${api5}' http://10.111.22.14:8440"
 
-        prlctl exec jumper-${SandboxID} "/root/certbot-auto --nginx certonly -d ${BRAND_URL}"
+        prlctl exec jumper-${SandboxID} "certbot --nginx certonly -d ${BRAND_URL}"
 #       if [ $? -ne 0 ]; then exit 0 fi
         prlctl exec jumper-${SandboxID} "rm -rf /etc/nginx/cert.pem"
         prlctl exec jumper-${SandboxID} "rm -rf /etc/nginx/cert.key"
